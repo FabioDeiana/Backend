@@ -41,6 +41,9 @@ app.use("/api/activities/:activityId/menu", menuRoutes);
 const newsletterRoutes = require("./src/routes/newsletterRoutes");
 app.use("/api/newsletter", newsletterRoutes);
 
+const chatRoutes = require("./src/routes/chatRoutes");
+app.use("/api/chat", chatRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.json({ message: "GreenMap API running" });
