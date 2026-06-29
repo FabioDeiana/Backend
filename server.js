@@ -21,14 +21,18 @@ app.use(express.json());
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minuti
+  windowMs: 15 * 60 * 1000,
   max: 100
 });
 app.use(limiter);
 
-// Test route
+// Routes
 const authRoutes = require("./src/routes/authRoutes");
+const activityRoutes = require("./src/routes/activityRoutes");
 app.use("/api/auth", authRoutes);
+app.use("/api/activities", activityRoutes);
+
+// Test route
 app.get("/", (req, res) => {
   res.json({ message: "GreenMap API running" });
 });
