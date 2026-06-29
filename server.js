@@ -31,6 +31,8 @@ const authRoutes = require("./src/routes/authRoutes");
 const activityRoutes = require("./src/routes/activityRoutes");
 app.use("/api/auth", authRoutes);
 app.use("/api/activities", activityRoutes);
+const reviewRoutes = require("./src/routes/reviewRoutes");
+app.use("/api/activities/:activityId/reviews", reviewRoutes);
 
 // Test route
 app.get("/", (req, res) => {
