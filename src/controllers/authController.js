@@ -4,14 +4,14 @@ const jwt = require("jsonwebtoken");
 // Genera access token
 const generateAccessToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRATION || "15m"
+    expiresIn: process.env.JWT_EXPIRATION || "15m",
   });
 };
 
 // Genera refresh token
 const generateRefreshToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRATION || "7d"
+    expiresIn: process.env.JWT_REFRESH_EXPIRATION || "7d",
   });
 };
 
@@ -25,7 +25,8 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "Email già registrata" });
     }
 
-    const user = await User.create({ name, email, password });
+    const user = new User({ name, email, password });
+    await user.save();
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
@@ -34,7 +35,7 @@ const register = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 giorni
     });
 
     res.status(201).json({
@@ -44,11 +45,18 @@ const register = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Errore del server", error: error.message });
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message: "Errore del server",
+        error: error.message,
+        stack: error.stack,
+      });
   }
 };
 
@@ -81,7 +89,7 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({
@@ -91,11 +99,13 @@ const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Errore del server", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Errore del server", error: error.message });
   }
 };
 
@@ -128,7 +138,9 @@ const getMe = async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: "Errore del server", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Errore del server", error: error.message });
   }
 };
 
