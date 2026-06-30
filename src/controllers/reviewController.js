@@ -18,7 +18,7 @@ const getReviews = async (req, res) => {
 // POST crea recensione
 const createReview = async (req, res) => {
   try {
-    const { rating, comment } = req.body;
+    const { ratings, comment } = req.body;
     const activityId = req.params.activityId;
 
     const activity = await Activity.findById(activityId);
@@ -40,8 +40,8 @@ const createReview = async (req, res) => {
     const review = await Review.create({
       activity: activityId,
       user: req.user._id,
-      rating,
-      comment,
+      ratings,
+      comment
     });
 
     await review.populate("user", "name avatar");
