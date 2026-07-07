@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema({
   },
   preferences: {
     diet: [{ type: String }],
-    accessibility: [{ type: String }]
+    accessibility: [{ type: String }],
+    allergens: [{ type: String }]
   },
   favoriteActivities: [{
     type: mongoose.Schema.Types.ObjectId,
