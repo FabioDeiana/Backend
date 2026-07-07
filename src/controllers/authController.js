@@ -144,4 +144,19 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { register, login, refreshToken, logout, getMe };
+// PUT aggiorna profilo utente
+const updateMe = async (req, res) => {
+  try {
+    const { name, preferences } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { name, preferences },
+      { new: true }
+    ).select("-password");
+    res.json({ message: "Profilo aggiornato con successo", user });
+  } catch (error) {
+    res.status(500).json({ message: "Errore del server", error: error.message });
+  }
+};
+
+module.exports = { register, login, refreshToken, logout, getMe, updateMe };
