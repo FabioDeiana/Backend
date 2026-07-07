@@ -118,4 +118,15 @@ const deleteReview = async (req, res) => {
   }
 };
 
-module.exports = { getReviews, createReview, updateReview, deleteReview };
+// GET recensioni dell'utente loggato
+const getMyReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ user: req.user._id })
+      .populate("activity", "name city category");
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: "Errore del server", error: error.message });
+  }
+};
+
+module.exports = { getReviews, createReview, updateReview, deleteReview, getMyReviews };

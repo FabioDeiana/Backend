@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { register, login, refreshToken, logout, getMe, updateMe } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
+const { getMyReviews } = require("../controllers/reviewController");
+
+
 
 router.post("/register", register);
 router.post("/login", login);
@@ -9,5 +12,6 @@ router.post("/refresh", refreshToken);
 router.post("/logout", logout);
 router.get("/me", protect, getMe);
 router.put("/me", protect, updateMe);
+router.get("/me/reviews", protect, getMyReviews);
 
 module.exports = router;
