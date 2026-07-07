@@ -44,6 +44,9 @@ app.use("/api/newsletter", newsletterRoutes);
 const chatRoutes = require("./src/routes/chatRoutes");
 app.use("/api/chat", chatRoutes);
 
+const adminRoutes = require("./src/routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.json({ message: "GreenMap API running" });
