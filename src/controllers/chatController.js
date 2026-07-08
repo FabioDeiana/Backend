@@ -7,7 +7,6 @@ const chat = async (req, res) => {
 
     // Recupera attività dal database
     const activities = await Activity.find({}).limit(50);
-
     const activitiesContext = activities.map(a => ({
       name: a.name,
       category: a.category,
@@ -20,18 +19,15 @@ const chat = async (req, res) => {
     const systemPrompt = `Sei un assistente di GreenMap, una piattaforma che aiuta le persone a trovare attività eco-friendly come ristoranti vegani, supermercati biologici e negozi sostenibili.
     
 Il tuo compito è aiutare gli utenti a trovare attività in base alle loro esigenze, preferenze alimentari e necessità di accessibilità.
-
 Ecco le attività disponibili nel database:
 ${JSON.stringify(activitiesContext, null, 2)}
-
 ${preferences ? `L'utente ha queste preferenze: ${JSON.stringify(preferences)}` : ""}
-
 Rispondi sempre in ${language || "italiano"}, in modo amichevole e conciso. Se non trovi attività che corrispondono alla richiesta, dillo chiaramente e suggerisci di ampliare la ricerca.`;
 
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openai/gpt-oss-120b:free", 
+        model: "openrouter/free",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: message }
@@ -49,6 +45,13 @@ Rispondi sempre in ${language || "italiano"}, in modo amichevole e conciso. Se n
     res.json({ reply });
   } catch (error) {
     console.error(error.response?.data || error.message);
+
+    if (error.response?.status === 429) {
+      return res.status(503).json({
+        message: "L'assistente è momentaneamente sovraccarico, riprova tra qualche istante."
+      });
+    }
+
     res.status(500).json({ message: "Errore del server", error: error.response?.data || error.message });
   }
 };
