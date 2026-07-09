@@ -4,8 +4,7 @@ const Activity = require("../models/Activity");
 const getActivities = async (req, res) => {
   try {
     const { category, city, diet, accessibility, other, search } = req.query;
-
-    let filter = {};
+    let filter = { status: "approved" };
 
     if (category) filter.category = category;
     if (city) filter.city = new RegExp(city, "i");
@@ -48,11 +47,20 @@ const getActivity = async (req, res) => {
   }
 };
 
-// POST crea attività (solo admin)
+
+// POST crea attività (qualsiasi utente loggato; admin = approvata subito)
 const createActivity = async (req, res) => {
   try {
-    const activity = await Activity.create(req.body);
-    res.status(201).json({ message: "Attività creata con successo", activity });
+    const activity = await Activity.create({
+      ...req.body,
+      status: req.user.role === "admin" ? "approved" : "pending",
+      createdBy: req.user._id
+    });
+    const message =
+      req.user.role === "admin"
+        ? "Attività creata con successo"
+        : "Attività proposta con successo! Sarà visibile dopo l'approvazione.";
+    res.status(201).json({ message, activity });
   } catch (error) {
     res
       .status(500)
