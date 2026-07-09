@@ -142,6 +142,45 @@ const assignOwner = async (req, res) => {
   }
 };
 
+// GET attività in attesa di approvazione (solo admin)
+const getPendingActivities = async (req, res) => {
+  try {
+    const activities = await Activity.find({ status: "pending" })
+      .populate("createdBy", "name email");
+    res.json(activities);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Errore del server", error: error.message });
+  }
+};
+
+// PUT approva/rifiuta attività (solo admin)
+const moderateActivity = async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Status non valido" });
+    }
+    const activity = await Activity.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    if (!activity) {
+      return res.status(404).json({ message: "Attività non trovata" });
+    }
+    res.json({
+      message: status === "approved" ? "Attività approvata" : "Attività rifiutata",
+      activity
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Errore del server", error: error.message });
+  }
+};
+
 module.exports = {
   getActivities,
   getActivity,
@@ -149,4 +188,6 @@ module.exports = {
   updateActivity,
   deleteActivity,
   assignOwner,
+  getPendingActivities,
+  moderateActivity,
 };
