@@ -47,14 +47,13 @@ const getActivity = async (req, res) => {
   }
 };
 
-
 // POST crea attività (qualsiasi utente loggato; admin = approvata subito)
 const createActivity = async (req, res) => {
   try {
     const activity = await Activity.create({
       ...req.body,
       status: req.user.role === "admin" ? "approved" : "pending",
-      createdBy: req.user._id
+      createdBy: req.user._id,
     });
     const message =
       req.user.role === "admin"
@@ -62,12 +61,17 @@ const createActivity = async (req, res) => {
         : "Attività proposta con successo! Sarà visibile dopo l'approvazione.";
     res.status(201).json({ message, activity });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message:
+          "Alcuni campi sono mancanti o non validi. Controlla i dati e riprova.",
+      });
+    }
     res
       .status(500)
       .json({ message: "Errore del server", error: error.message });
   }
 };
-
 // PUT aggiorna attività (admin o owner)
 const updateActivity = async (req, res) => {
   try {
@@ -145,8 +149,10 @@ const assignOwner = async (req, res) => {
 // GET attività in attesa di approvazione (solo admin)
 const getPendingActivities = async (req, res) => {
   try {
-    const activities = await Activity.find({ status: "pending" })
-      .populate("createdBy", "name email");
+    const activities = await Activity.find({ status: "pending" }).populate(
+      "createdBy",
+      "name email",
+    );
     res.json(activities);
   } catch (error) {
     res
@@ -165,14 +171,15 @@ const moderateActivity = async (req, res) => {
     const activity = await Activity.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+      { new: true },
     );
     if (!activity) {
       return res.status(404).json({ message: "Attività non trovata" });
     }
     res.json({
-      message: status === "approved" ? "Attività approvata" : "Attività rifiutata",
-      activity
+      message:
+        status === "approved" ? "Attività approvata" : "Attività rifiutata",
+      activity,
     });
   } catch (error) {
     res
