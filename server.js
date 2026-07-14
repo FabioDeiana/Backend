@@ -49,7 +49,7 @@ app.use("/api/admin", adminRoutes);
 
 // Test route
 app.get("/", (req, res) => {
-  res.json({ message: "GreenMap API running" });
+  res.json({ message: "OpenPlaces API running" });
 });
 
 const PORT = process.env.PORT || 5000;

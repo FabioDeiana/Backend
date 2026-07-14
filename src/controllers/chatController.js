@@ -16,7 +16,7 @@ const chat = async (req, res) => {
       address: a.address
     }));
 
-    const systemPrompt = `Sei un assistente di GreenMap, una piattaforma che aiuta le persone a trovare attività eco-friendly come ristoranti vegani, supermercati biologici e negozi sostenibili.
+    const systemPrompt = `Sei un assistente di OpenPlaces, una piattaforma che aiuta le persone a trovare attività eco-friendly come ristoranti vegani, supermercati biologici e negozi sostenibili.
     
 Il tuo compito è aiutare gli utenti a trovare attività in base alle loro esigenze, preferenze alimentari e necessità di accessibilità.
 Ecco le attività disponibili nel database:
