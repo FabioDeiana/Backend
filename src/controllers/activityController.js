@@ -3,7 +3,7 @@ const Activity = require("../models/Activity");
 // GET tutte le attività (con filtri)
 const getActivities = async (req, res) => {
   try {
-    const { category, city, diet, accessibility, other, search } = req.query;
+    const { category, city, diet, accessibility, other, search, foodBases } = req.query;
     let filter = { status: "approved" };
 
     if (category) filter.category = category;
@@ -13,6 +13,7 @@ const getActivities = async (req, res) => {
     if (accessibility)
       filter["tags.accessibility"] = { $in: accessibility.split(",") };
     if (other) filter["tags.other"] = { $in: other.split(",") };
+    if (foodBases) filter["tags.foodBases"] = { $in: foodBases.split(",") };
 
     const activities = await Activity.find(filter).populate(
       "owner",

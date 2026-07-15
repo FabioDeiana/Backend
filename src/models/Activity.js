@@ -40,6 +40,7 @@ const activitySchema = new mongoose.Schema(
       diet: [{ type: String }],
       accessibility: [{ type: String }],
       other: [{ type: String }],
+      foodBases: [{ type: String }],
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
