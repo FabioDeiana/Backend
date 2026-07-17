@@ -6,7 +6,11 @@ const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const connectDB = require("./src/config/db");
-connectDB();
+
+// In locale connetti subito all'avvio
+if (process.env.VERCEL !== "1") {
+  connectDB();
+}
 
 const app = express();
 
@@ -20,6 +24,16 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+// In serverless, assicura la connessione DB prima di ogni richiesta
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Errore di connessione al database" });
+  }
+});
 
 // Rate limiting
 const limiter = rateLimit({
